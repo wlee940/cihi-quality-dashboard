@@ -1,0 +1,5 @@
+.DS_Store
+
+# CIHI's bulk Indicator Library download, ~543 MB; data/source/ holds the extracts
+indicator-library-all-indicator-data-en.csv
+*.pdf

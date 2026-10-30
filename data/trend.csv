@@ -1,0 +1,198 @@
+id,short,category,year,value,canada,ontario,cihi_comparison
+in_hospital_sepsis,In-hospital sepsis,Safe,2014-2015,2.5,4.0,4.6,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2015-2016,2.0,4.1,4.5,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2016-2017,2.4,3.9,4.4,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2017-2018,4.0,4.0,4.6,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2018-2019,4.9,3.9,4.6,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2019-2020,6.3,3.9,4.4,Below average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2020-2021,4.0,4.3,4.8,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2021-2022,7.2,4.8,5.3,Below average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2022-2023,5.8,4.4,4.7,Below average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2023-2024,3.1,4.1,4.2,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2024-2025,2.7,3.9,3.9,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2025-2026,2.7,3.8,3.7,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2014-2015,1.6,3.6,2.9,Above average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2015-2016,2.1,3.6,2.9,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2016-2017,2.6,3.7,3.0,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2017-2018,2.7,3.8,2.9,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2018-2019,3.1,3.7,2.9,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2019-2020,2.9,3.9,3.2,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2020-2021,3.2,4.0,3.3,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2021-2022,2.5,4.0,3.2,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2022-2023,2.5,4.1,3.5,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2023-2024,2.7,4.4,3.7,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2024-2025,3.0,4.7,4.2,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2025-2026,3.5,5.0,4.3,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2014-2015,9.4,18.5,14.5,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2015-2016,6.6,18.7,14.6,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2016-2017,8.3,18.9,14.8,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2017-2018,8.8,18.4,14.2,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2018-2019,9.0,18.6,15.2,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2019-2020,10.3,18.6,14.9,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2020-2021,14.5,18.9,15.0,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2021-2022,14.8,18.2,14.8,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2022-2023,15.7,18.1,14.9,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2023-2024,11.0,18.4,15.0,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2024-2025,20.2,19.4,16.4,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2025-2026,14.6,20.2,16.9,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2014-2015,5.4,6.6,7.1,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2015-2016,10.2,6.6,6.9,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2016-2017,5.1,6.2,6.5,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2017-2018,8.4,6.3,6.7,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2018-2019,6.3,6.1,6.5,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2019-2020,13.7,6.1,6.4,Below average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2020-2021,3.0,5.9,6.3,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2021-2022,7.2,6.1,6.4,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2022-2023,3.8,6.3,6.6,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2023-2024,6.4,5.8,6.1,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2024-2025,6.8,5.7,6.0,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2025-2026,5.9,5.5,5.7,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2018-2019,1.7,1.6,1.7,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2019-2020,1.3,1.5,1.7,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2020-2021,1.7,1.7,1.9,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2021-2022,1.7,2.0,2.1,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2022-2023,2.0,1.8,1.9,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2023-2024,1.9,1.7,1.8,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2024-2025,1.2,1.6,1.8,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2025-2026,1.3,1.6,1.7,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2016-2017,105,100,99,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2017-2018,95,100,101,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2018-2019,113,99,102,Below average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2019-2020,121,100,103,Below average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2020-2021,108,100,103,Below average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2021-2022,91,99,99,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2022-2023,92,99,97,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2023-2024,100,99,95,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2024-2025,98,99,95,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2025-2026,91,99,94,Same as average performance
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2015-2016,19.1,15.9,14.8,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2016-2017,13.5,15.6,14.1,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2017-2018,15.8,16.2,14.6,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2018-2019,15.5,16.3,14.5,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2019-2020,16.3,16.0,14.4,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2020-2021,14.5,17.6,16.2,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2021-2022,17.6,17.6,16.2,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2022-2023,12.7,18.0,16.5,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2023-2024,16.1,17.9,16.2,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2024-2025,21.3,18.2,15.7,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2015-2016,8.4,9.2,9.3,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2016-2017,8.5,9.2,9.3,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2017-2018,9.2,9.3,9.4,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2018-2019,8.7,9.4,9.5,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2019-2020,8.2,9.5,9.6,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2020-2021,7.9,9.4,9.7,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2021-2022,8.2,9.3,9.5,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2022-2023,7.6,9.0,9.3,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2023-2024,7.5,9.3,9.6,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2024-2025,8.2,9.4,9.8,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2025-2026,8.7,9.7,10.2,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2015-2016,12.9,13.8,14.0,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2016-2017,12.8,13.8,13.9,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2017-2018,14.2,13.9,14.0,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2018-2019,13.5,14.1,14.3,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2019-2020,12.6,14.2,14.4,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2020-2021,12.3,14.1,14.5,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2021-2022,12.0,13.7,14.0,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2022-2023,11.0,13.6,14.0,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2023-2024,10.8,13.7,14.2,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2024-2025,12.1,13.9,14.4,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2025-2026,12.2,14.2,14.8,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2015-2016,1.5,2.1,1.9,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2016-2017,1.5,2.1,1.9,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2017-2018,1.1,2.2,1.9,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2018-2019,0.7,2.2,2.0,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2019-2020,1.4,2.2,1.9,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2020-2021,0.9,2.0,1.8,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2021-2022,1.0,2.0,1.9,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2022-2023,1.2,1.9,1.8,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2023-2024,1.1,1.9,2.0,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2024-2025,1.3,1.9,2.0,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2025-2026,1.8,2.0,2.0,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2015-2016,8.1,6.8,7.1,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2016-2017,5.5,6.9,7.1,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2017-2018,8.0,6.9,7.4,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2018-2019,7.7,6.9,7.0,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2019-2020,4.0,6.9,7.1,Above average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2020-2021,7.2,6.6,7.0,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2021-2022,6.8,6.7,6.9,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2022-2023,8.3,6.8,7.4,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2023-2024,7.5,6.9,7.3,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2024-2025,5.9,6.5,6.9,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2025-2026,7.5,6.6,7.0,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2015-2016,5.3,6.8,7.1,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2016-2017,6.9,6.8,7.0,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2017-2018,6.7,6.8,7.0,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2018-2019,6.3,6.8,6.9,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2019-2020,6.5,6.8,7.1,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2020-2021,5.6,7.0,7.3,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2021-2022,6.9,7.1,7.5,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2022-2023,5.2,6.5,6.8,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2023-2024,5.8,6.7,7.1,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2024-2025,6.1,6.9,7.4,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2025-2026,6.9,7.0,7.5,Same as average performance
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2021-2022,29.5,40.7,32.5,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2022-2023,49.8,49.0,45.0,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2023-2024,59.2,48.2,43.7,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2024-2025,53.0,48.5,44.4,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2025-2026,55.6,46.5,38.3,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2021-2022,3.9,4.2,3.7,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2022-2023,6.5,5.0,4.2,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2023-2024,7.0,5.2,4.4,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2024-2025,7.5,5.5,4.5,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2025-2026,7.6,5.3,4.3,Below average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2012-2013,97.4,82.6,83.0,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2013-2014,97.1,84.6,84.0,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2014-2015,93.6,86.3,85.2,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2015-2016,96.3,87.8,86.4,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2016-2017,95.2,87.5,86.3,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2017-2018,97.7,86.4,85.2,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2018-2019,96.0,87.6,86.9,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2019-2020,94.6,86.5,86.3,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2020-2021,98.9,85.5,84.6,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2021-2022,91.1,84.7,84.4,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2022-2023,91.5,81.9,81.7,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2023-2024,92.0,82.2,83.6,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2024-2025,97.5,83.1,84.7,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2025-2026,94.7,83.6,86.3,Above average performance
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2020-2021,5861,8522,7365,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2021-2022,6065,8671,7230,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2022-2023,7395,8839,7524,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2023-2024,8505,9526,8080,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2024-2025,8644,9952,8296,Lower than average
+number_of_acute_care_beds,Acute care beds,Context,2024-2025,154,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2021-2022,9312,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2022-2023,9515,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2023-2024,10392,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2024-2025,10700,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2025-2026,11454,,,
+average_acute_occupancy_rate,Acute occupancy rate,Context,2024-2025,88.9,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2021-2022,46.2,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2022-2023,46.2,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2023-2024,44.9,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2024-2025,47.3,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2025-2026,46.5,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2021-2022,5.2,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2022-2023,5.3,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2023-2024,5.2,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2024-2025,5.3,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2025-2026,5.2,,,
+number_of_emergency_department_visits,Emergency department visits,Context,2021-2022,49062,13998229,5831853,
+number_of_emergency_department_visits,Emergency department visits,Context,2022-2023,44935,15129435,6213463,
+number_of_emergency_department_visits,Emergency department visits,Context,2023-2024,44132,15498771,6430455,
+number_of_emergency_department_visits,Emergency department visits,Context,2024-2025,47216,16103265,6616793,
+number_of_emergency_department_visits,Emergency department visits,Context,2025-2026,47877,15671480,6607365,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2015-2016,39.7,38.5,41.1,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2016-2017,39.5,38.4,40.8,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2017-2018,38.9,38.4,40.3,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2018-2019,37.7,38.1,40.4,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2019-2020,35.7,38.1,40.2,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2020-2021,40.6,39.5,42.2,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2021-2022,43.0,39.3,42.4,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2022-2023,49.0,42.0,45.5,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2023-2024,47.5,42.3,46.2,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2024-2025,45.6,42.5,46.5,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2021-2022,17.0,,16.7,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2022-2023,25.6,,18.3,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2023-2024,23.2,,17.9,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2024-2025,22.9,,18.3,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2025-2026,15.9,,16.5,
