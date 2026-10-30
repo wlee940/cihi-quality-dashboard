@@ -1,0 +1,1292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CIHI Quality Dashboard</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 16 16%27%3E%3Crect width=%2716%27 height=%2716%27 rx=%273%27 fill=%27%231C7A58%27/%3E%3C/svg%3E">
+<meta name="description" content="CIHI quality indicators for Cambridge Memorial Hospital, with the hospital's QIP targets alongside them.">
+<style>
+  /* The design tokens the artifact host normally supplies. The page references these
+     but does not define them; only its own --cmh-* status colours are its own. */
+  :root {
+    --font-anthropic-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    --font-anthropic-serif: ui-serif, Georgia, "Times New Roman", Times, serif;
+
+    --cds-radius: 8px;
+    --cds-pad-xs: 6px;
+    --cds-pad-sm: 10px;
+    --cds-pad-lg: 20px;
+    --cds-gap-xs: 4px;
+    --cds-gap-sm: 8px;
+    --cds-gap-md: 12px;
+    --cds-gap-xl: 24px;
+    --cds-font-size-caption: 0.75rem;
+    --cds-font-size-body: 0.9375rem;
+    --cds-font-size-heading: 1.0625rem;
+    --cds-font-size-title: 1.5rem;
+    --cds-font-weight-medium: 500;
+    --cds-dur-slow: 0.4s;
+
+    --cmh-page: #faf9f7;
+    --color-fg: #1f1e1c;
+    --color-fg-muted: #6e6b64;
+    --color-panel: #ffffff;
+    --color-border-line: #e6e3dc;
+    --color-bad: #c0392b;
+    --cds-border: #e6e3dc;
+    --cds-text-secondary: #6e6b64;
+    --cds-surface-popover: #ffffff;
+    --cds-shadow-popover: 0 2px 8px rgba(0, 0, 0, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.04);
+    --cds-chart-axis: #8d8a83;
+    --cds-chart-grid: #ece9e2;
+    --cds-chart-muted: #b4b0a8;
+    --cds-chart-reference: #8d8a83;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --cmh-page: #1c1b17;
+      --color-fg: #edeae3;
+      --color-fg-muted: #a5a19a;
+      --color-panel: #26251f;
+      --color-border-line: #3a3832;
+      --color-bad: #e06c5c;
+      --cds-border: #3a3832;
+      --cds-text-secondary: #a5a19a;
+      --cds-surface-popover: #2f2e27;
+      --cds-shadow-popover: 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+      --cds-chart-axis: #8f8b83;
+      --cds-chart-grid: #3a3832;
+      --cds-chart-muted: #6d6a63;
+      --cds-chart-reference: #9a968e;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --cmh-page: #1c1b17;
+    --color-fg: #edeae3;
+    --color-fg-muted: #a5a19a;
+    --color-panel: #26251f;
+    --color-border-line: #3a3832;
+    --color-bad: #e06c5c;
+    --cds-border: #3a3832;
+    --cds-text-secondary: #a5a19a;
+    --cds-surface-popover: #2f2e27;
+    --cds-shadow-popover: 0 2px 10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.06);
+    --cds-chart-axis: #8f8b83;
+    --cds-chart-grid: #3a3832;
+    --cds-chart-muted: #6d6a63;
+    --cds-chart-reference: #9a968e;
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    padding: 24px 16px 48px;
+    background: var(--cmh-page);
+    color: var(--color-fg);
+    font-family: var(--font-anthropic-sans);
+    font-size: var(--cds-font-size-body);
+    line-height: 1.5;
+  }
+  .cmh-page { max-width: 1040px; margin: 0 auto; }
+</style>
+</head>
+<body>
+<meta name="dash-one-writer">
+<style>
+  :root {
+    --cmh-ok: #1C7A58;
+    --cmh-mid: #5F7183;
+    --cmh-bad: #C62828;
+    --cmh-none: #8A8A8A;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --cmh-ok: #4FC48F;
+      --cmh-mid: #9FB3C7;
+      --cmh-bad: #FF8A7E;
+      --cmh-none: #9A9A9A;
+    }
+  }
+  :root[data-theme="dark"] {
+    --cmh-ok: #4FC48F;
+    --cmh-mid: #9FB3C7;
+    --cmh-bad: #FF8A7E;
+    --cmh-none: #9A9A9A;
+  }
+  .cmh {
+    font-family: var(--font-anthropic-sans);
+    color: var(--color-fg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--cds-gap-xl);
+    font-variant-numeric: tabular-nums;
+  }
+  .cmh h1 {
+    font-family: var(--font-anthropic-serif);
+    font-weight: 400;
+    font-size: var(--cds-font-size-title);
+    margin: 0;
+    text-wrap: balance;
+  }
+  .cmh-sub { margin: var(--cds-gap-xs) 0 0; font-size: var(--cds-font-size-body); color: var(--color-fg-muted); max-width: 70ch; }
+  .cmh-sub b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+
+  .cmh-section { display: flex; flex-direction: column; gap: var(--cds-gap-md); }
+  .cmh-section-head { display: flex; flex-direction: column; gap: 2px; }
+  .cmh-h2 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .cmh-h3 { margin: 0; font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); }
+  .cmh-note { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); max-width: 68ch; }
+  .cmh-note b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+
+  .cmh-card {
+    background: var(--color-panel);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--cds-radius);
+    padding: var(--cds-pad-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--cds-gap-sm);
+    min-width: 0;
+  }
+  .cmh-card-title { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+
+  .cmh-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 8.5rem), 1fr)); gap: var(--cds-gap-md); }
+  .cmh-tile-label { display: flex; align-items: center; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cmh-tile-value { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; }
+  .cmh-dot { width: .5rem; height: .5rem; border-radius: 50%; flex: none; background: currentColor; }
+  .cmh-is-green { color: var(--cmh-ok); }
+  .cmh-is-yellow { color: var(--cmh-mid); }
+  .cmh-is-red { color: var(--cmh-bad); }
+  .cmh-is-suppressed { color: var(--cmh-none); }
+  .cmh-tile-green .cmh-tile-value, .cmh-tile-green .cmh-tile-label { color: var(--cmh-ok); }
+  .cmh-tile-yellow .cmh-tile-value, .cmh-tile-yellow .cmh-tile-label { color: var(--cmh-mid); }
+  .cmh-tile-red .cmh-tile-value, .cmh-tile-red .cmh-tile-label { color: var(--cmh-bad); }
+  .cmh-tile-suppressed .cmh-tile-value, .cmh-tile-suppressed .cmh-tile-label { color: var(--color-fg-muted); }
+
+  .cmh-chart-wrap { position: relative; min-width: 0; }
+  .cmh-chart-wrap svg { display: block; overflow: visible; }
+  .cmh-tip {
+    position: absolute; pointer-events: none;
+    background: var(--cds-surface-popover);
+    border: 1px solid var(--cds-border);
+    border-radius: var(--cds-radius);
+    box-shadow: var(--cds-shadow-popover);
+    padding: var(--cds-pad-xs) var(--cds-pad-sm);
+    font-size: var(--cds-font-size-caption);
+    opacity: 0; max-width: 17rem; z-index: 2;
+  }
+  .cmh-tip[data-shown="1"] { opacity: 1; }
+  .cmh-tip-head { color: var(--cds-text-secondary); margin-bottom: 2px; }
+  .cmh-tip-row { display: flex; gap: var(--cds-gap-md); justify-content: space-between; }
+
+  .cmh-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cmh-legend span { display: inline-flex; align-items: center; gap: var(--cds-gap-xs); }
+
+  .cmh-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr)); gap: var(--cds-gap-md); }
+
+  .cmh-ind-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--cds-gap-sm); }
+  .cmh-ind-name { font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+  .cmh-pill {
+    display: inline-flex; align-items: center; gap: var(--cds-gap-xs); flex: none;
+    font-size: var(--cds-font-size-caption); font-weight: var(--cds-font-weight-medium);
+    padding: 2px var(--cds-pad-xs); border-radius: var(--cds-radius);
+    border: 1px solid currentColor; background: color-mix(in srgb, currentColor 10%, transparent);
+    white-space: nowrap;
+  }
+  .cmh-figure { display: flex; align-items: baseline; gap: var(--cds-gap-xs); flex-wrap: wrap; }
+  .cmh-figure-value { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); line-height: 1.1; }
+  .cmh-figure-unit { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cmh-meta { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cmh-meta b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+  .cmh-spark { min-height: 46px; }
+  .cmh-spark svg { display: block; overflow: visible; }
+  .cmh-src { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); border-top: 1px solid var(--color-border-line); padding-top: var(--cds-pad-xs); }
+
+  .cmh-bar { position: relative; height: .5rem; border-radius: var(--cds-radius); background: color-mix(in srgb, var(--color-fg) 9%, transparent); }
+  .cmh-bar-fill { position: absolute; top: 0; bottom: 0; left: 0; background: currentColor; border-radius: inherit; }
+  .cmh-bar-mark { position: absolute; top: -3px; bottom: -3px; width: 2px; background: var(--color-fg); }
+  .cmh-pair { display: flex; justify-content: space-between; gap: var(--cds-gap-sm); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cmh-pair b { font-weight: var(--cds-font-weight-medium); color: var(--color-fg); }
+  .cmh-tags { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .cmh-tags span { border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: 0 var(--cds-pad-xs); white-space: nowrap; }
+  .cmh-why { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-style: italic; }
+
+  .cmh-table-box { overflow: auto; max-height: 32rem; }
+  .cmh table.cmh-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); }
+  .cmh-table th, .cmh-table td { text-align: left; padding: var(--cds-pad-xs) var(--cds-pad-sm) var(--cds-pad-xs) 0; border-bottom: 1px solid var(--color-border-line); white-space: nowrap; }
+  .cmh-table th { position: sticky; top: 0; background: var(--color-panel); font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); }
+  .cmh-table td.cmh-num, .cmh-table th.cmh-num { text-align: right; }
+  .cmh-table td.cmh-wrap { white-space: normal; min-width: 13rem; }
+  .cmh-table td.cmh-cell { padding-left: var(--cds-pad-xs); padding-right: var(--cds-pad-xs); border-radius: 3px; font-weight: var(--cds-font-weight-medium); }
+  .cmh-table td.cmh-cell-green { background: color-mix(in srgb, var(--cmh-ok) 14%, transparent); color: var(--cmh-ok); }
+  .cmh-table td.cmh-cell-yellow { background: color-mix(in srgb, var(--cmh-mid) 14%, transparent); color: var(--cmh-mid); }
+  .cmh-table td.cmh-cell-red { background: color-mix(in srgb, var(--cmh-bad) 16%, transparent); color: var(--cmh-bad); }
+  .cmh-table td.cmh-cell-suppressed { background: color-mix(in srgb, var(--color-fg) 6%, transparent); color: var(--color-fg-muted); font-weight: 400; }
+  .cmh-table td.cmh-stale { color: var(--color-fg-muted); }
+  .cmh-unit-suffix { color: var(--color-fg-muted); }
+  .cmh-status-cell { display: inline-flex; align-items: center; gap: var(--cds-gap-xs); }
+
+  [data-dash-source-state="empty"] { color: transparent; }
+  [data-dash-source-state="refreshing"] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  .cmh-fail { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-xs); min-height: 8rem; }
+  .cmh-fail-dot { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); flex: none; }
+  .cmh-fail-text { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+</style>
+
+<div class="cmh">
+  <header>
+    <h1>CIHI quality indicators, Cambridge Memorial Hospital</h1>
+    <p class="cmh-sub">Every quality indicator CIHI grades for this hospital, in CIHI's own performance categories. Status is CIHI's own comparison against the Canadian average: green is above average, slate grey is no different from average, red is below average. The hospital's own quality improvement plan targets are kept separate, further down, because target attainment is a different question from peer comparison. Peer group <b data-draw="peer" data-source="indicators" data-field="peer_group" data-where="id=hospital_deaths_hsmr">—</b>.</p>
+  </header>
+
+  <div class="cmh-tiles">
+    <div class="cmh-card cmh-tile-green">
+      <div class="cmh-tile-label"><i class="cmh-dot"></i>Above average</div>
+      <div class="cmh-tile-value" data-draw="tile_green" data-source="counts" data-field="green" data-row="0">—</div>
+    </div>
+    <div class="cmh-card cmh-tile-yellow">
+      <div class="cmh-tile-label"><i class="cmh-dot"></i>Same as average</div>
+      <div class="cmh-tile-value" data-draw="tile_yellow" data-source="counts" data-field="yellow" data-row="0">—</div>
+    </div>
+    <div class="cmh-card cmh-tile-red">
+      <div class="cmh-tile-label"><i class="cmh-dot"></i>Below average</div>
+      <div class="cmh-tile-value" data-draw="tile_red" data-source="counts" data-field="red" data-row="0">—</div>
+    </div>
+  </div>
+
+  <section class="cmh-section">
+    <div class="cmh-card">
+      <h2 class="cmh-card-title">How far each indicator sits from the Canadian average</h2>
+      <p class="cmh-note">Each bar is the gap between this hospital and the Canadian average for the same year, turned so that bars to the right are better care and bars to the left are worse, whichever direction the indicator runs. The zero line is the Canadian average. Bars are coloured by CIHI's own performance comparison, which tests whether the gap is statistically significant, so a long bar can still be slate.</p>
+      <div class="cmh-chart-wrap" data-draw="gap_chart" data-source="indicators gaps" data-fetchpriority="high"></div>
+      <div class="cmh-legend">
+        <span class="cmh-is-green"><i class="cmh-dot"></i>Above average</span>
+        <span class="cmh-is-yellow"><i class="cmh-dot"></i>Same as average</span>
+        <span class="cmh-is-red"><i class="cmh-dot"></i>Below average</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cmh-section">
+    <div class="cmh-section-head">
+      <h2 class="cmh-h2">Safe</h2>
+      <p class="cmh-note">Harm that happens during care. CIHI files these under health system outputs, safe.</p>
+    </div>
+    <div class="cmh-grid" data-draw="cards_safe" data-source="indicators status trend targets"></div>
+  </section>
+
+  <section class="cmh-section">
+    <div class="cmh-section-head">
+      <h2 class="cmh-h2">Appropriate and effective</h2>
+      <p class="cmh-note">Whether care achieved what it should: deaths relative to the patients treated, urgent readmission after discharge, and procedures done when they were warranted.</p>
+    </div>
+    <div class="cmh-grid" data-draw="cards_effective" data-source="indicators status trend targets"></div>
+  </section>
+
+  <section class="cmh-section">
+    <div class="cmh-section-head">
+      <h2 class="cmh-h2">Access to high-quality services</h2>
+      <p class="cmh-note">How long patients wait. Both emergency department measures are 90th percentiles, so they describe the slowest tenth of patients, not the typical one.</p>
+    </div>
+    <div class="cmh-grid" data-draw="cards_access" data-source="indicators status trend targets"></div>
+  </section>
+
+  <section class="cmh-section">
+    <div class="cmh-section-head">
+      <h2 class="cmh-h2">Quality improvement plan targets, 2026/27</h2>
+      <p class="cmh-note">The hospital's own commitments, from the Cambridge Memorial Hospital QIP 2026/27 workplan. Each one pairs a baseline, as it stood when the plan was written, with the figure the hospital committed to reach by the end of March 2027. Read the colours as distance still to travel, not as pass or fail: a QIP target is set deliberately ahead of current performance, so a wide gap is the size of the undertaking rather than a failure. Of the six commitments, <b data-draw="qip_met" data-source="qip_counts" data-field="met" data-row="0">—</b> already sit at or past the target, <b data-draw="qip_close" data-source="qip_counts" data-field="close" data-row="0">—</b> are within ten per cent of it and <b data-draw="qip_off" data-source="qip_counts" data-field="off" data-row="0">—</b> have further to go. Only one of them, the emergency department wait to physician, has a matching indicator in CIHI's library; the rest are collected locally or drawn from data CIHI does not publish per hospital.</p>
+    </div>
+    <div class="cmh-grid" data-draw="cards_qip_priority" data-source="targets qip"></div>
+    <div class="cmh-section-head">
+      <h3 class="cmh-h3">Custom and optional indicators</h3>
+      <p class="cmh-note">Chosen by the hospital rather than set provincially. All six commitments, priority and custom alike, are tied to executive compensation.</p>
+    </div>
+    <div class="cmh-grid" data-draw="cards_qip_other" data-source="targets qip"></div>
+  </section>
+
+  <section class="cmh-section">
+    <div class="cmh-card">
+      <h2 class="cmh-card-title">Every graded indicator, 2025&#8211;2026</h2>
+      <p class="cmh-note">The reporting year just closed, with each indicator set against the Canadian and Ontario figures for the same year. The status and the hospital's own figure are tinted with CIHI's performance comparison, the same colours as the cards above, and rows are ordered so the indicators needing attention come first. Each indicator's unit of measure follows its name, except for percentages, which carry the sign on the figure itself.</p>
+      <p class="cmh-note">One indicator, the low-risk caesarean section rate, carries its 2024&#8211;2025 figure because CIHI has not refreshed it on the newer cycle yet; its year cell says so and is greyed.</p>
+      <div class="cmh-table-box">
+        <table class="cmh-table" data-source="indicators" data-row-key="id">
+          <thead>
+            <tr>
+              <th data-field="short">Indicator</th>
+              <th data-source="status" data-field="status">Status</th>
+              <th class="cmh-num" data-field="value">CMH</th>
+              <th class="cmh-num" data-field="ontario">Ontario</th>
+              <th class="cmh-num" data-field="canada">Canada</th>
+              <th data-field="category">Category</th>
+              <th data-field="cihi_trend">CIHI trend</th>
+              <th data-field="year">Year</th>
+            </tr>
+          </thead>
+          <tbody data-draw="table_rows"></tbody>
+        </table>
+      </div>
+      <div class="cmh-legend">
+        <span class="cmh-is-green"><i class="cmh-dot"></i>Above average</span>
+        <span class="cmh-is-yellow"><i class="cmh-dot"></i>Same as average</span>
+        <span class="cmh-is-red"><i class="cmh-dot"></i>Below average</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="cmh-section">
+    <div class="cmh-grid">
+      <div class="cmh-card">
+        <h2 class="cmh-card-title">How to read the colours</h2>
+        <p class="cmh-note">The colours are CIHI's, not ours. CIHI compares the hospital's risk-adjusted result with the Canadian average and tests whether the difference is statistically significant given the number of cases. <b>Green</b> is above average performance, <b>slate grey</b> is no different from average, <b>red</b> is below average performance.</p>
+        <p class="cmh-note">Slate is the common result and is not a problem to solve, which is why it is a neutral grey rather than an amber warning. A hospital this size has few cases for some indicators, so the confidence interval is wide and only a large gap reaches significance. One indicator is left out of the dashboard entirely: CIHI suppressed <b>30-day stroke in-hospital mortality</b> for 2025&#8211;2026 because there were too few cases to report, so there is no result to grade. The Canadian figure for it was 10.3 deaths per 100 and the Ontario figure 9.1, for reference.</p>
+      </div>
+      <div class="cmh-card">
+        <h2 class="cmh-card-title">Reading the trends</h2>
+        <p class="cmh-note">Each card carries CIHI's own trend verdict and a spark line of every year CIHI publishes, with the Canadian average behind it as a faint dashed line. Where a QIP target measures the same thing, it is drawn across the spark line as a finer dotted line, so the hospital's own commitment and the national average can be read against the history at once. The verdict compares the latest year with the hospital's own history, so <b>weakening</b> means this hospital moved away from its past performance, not that it fell behind other hospitals.</p>
+        <p class="cmh-note">HSMR was re-baselined by CIHI in 2026, so the whole series is restated on the new basis and older published HSMR figures will not match. Risk-adjusted rates are also revised when CIHI updates its models, which is why these figures can differ from numbers quoted in earlier reports.</p>
+      </div>
+      <div class="cmh-card">
+        <h2 class="cmh-card-title">Targets and comparisons are different tests</h2>
+        <p class="cmh-note">A CIHI colour says how this hospital compares with other Canadian hospitals. A QIP colour says whether it reached a number it set for itself. The emergency department wait to physician is the one indicator that carries both, and they agree: CIHI calls it below average performance and the QIP has it well short of a 4.50 hour target drawn from regional partner performance. Elsewhere the two can part ways, so neither is read as a check on the other.</p>
+        <p class="cmh-note">The QIP sets no tolerance band, so <b>at target</b>, <b>within 10%</b> and <b>gap to close</b> are a local convention: at target is at or past the committed figure, within 10% is a remaining gap no larger than a tenth of the target value, and anything beyond that is a gap to close. Because a QIP target is written to sit ahead of the baseline, most commitments start in that last band by design, and the number that matters is the one in the gap line on each card. QIP figures are left exactly as published rather than recalculated, which is why the wait to physician reads 7.40 hours for December 2024 to November 2025 in the QIP section and 7.60 hours for 2025&#8211;2026 in CIHI's series. Same NACRS measure, different periods, not a discrepancy.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/csv" data-dataset="indicators">
+id,category,short,indicator,dimension,metric,unit,direction,measure_type,year,value,suppressed,ci_low,ci_high,cihi_comparison,cihi_trend,top_result,stat_diff,canada,ontario,prior_year,prior_value,first_year,years_of_data,peer_group,interpretation,description,slug
+in_hospital_sepsis,Safe,In-hospital sepsis,In-Hospital Sepsis,Health system outputs: Safe,Risk-adjusted rate,"per 1,000",lower,Indicator,2025-2026,2.7,,1.61,4.52,Same as average performance,No change,Not a top result,No,3.8,3.7,2024-2025,2.7,2014-2015,12,Community — Medium,Lower rates are desirable.,The risk-adjusted rate of sepsis that is identified after admission.,in-hospital-sepsis
+obstetric_trauma_without_instrument,Safe,"Obstetric trauma, no instrument",Obstetric Trauma (Without Instrument),Health system outputs: Safe,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,3.5,,2.54,4.90,Same as average performance,No change,Not a top result,No,5.0,4.3,2024-2025,3.0,2014-2015,12,Community — Medium,Lower rates are desirable.,This indicator measures the rate of obstetric trauma (third-degree lacerations or greater in severity) for vaginal deliveries without instrument assistance.,obstetric-trauma-without-instrument
+obstetric_trauma_with_instrument,Safe,"Obstetric trauma, with instrument",Obstetric Trauma (With Instrument),Health system outputs: Safe,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,14.6,,10.06,20.61,Same as average performance,No change,Not a top result,No,20.2,16.9,2024-2025,20.2,2014-2015,12,Community — Medium,Lower rates are more desirable.,This indicator measures the rate of obstetric trauma (lacerations that are third degree or greater in severity) for instrument-assisted vaginal deliveries.,obstetric-trauma-with-instrument
+30_day_acute_myocardial_infarction_in_hospital_mortality,Appropriate and effective,30-day AMI in-hospital mortality,30-Day Acute Myocardial Infarction In-Hospital Mortality,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,5.9,,2.88,11.58,Same as average performance,No change,Not a top result,No,5.5,5.7,2024-2025,6.8,2014-2015,12,Community — Medium,Lower rates are desirable.,The risk-adjusted rate of all-cause in-hospital death occurring within 30 days of first admission with a diagnosis of acute myocardial infarction (AMI),30-day-acute-myocardial-infarction-in-hospital-mortality
+30_day_stroke_in_hospital_mortality,Appropriate and effective,30-day stroke in-hospital mortality,30-Day Stroke In-Hospital Mortality,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,,yes,,,Suppressed,Suppressed,Suppressed,Suppressed,10.3,9.1,2024-2025,,2014-2015,12,Community — Medium,Lower rates are desirable.,The risk-adjusted rate of all-cause in-hospital death occurring within 30 days of first admission to an acute care hospital with a diagnosis of stroke,30-day-stroke-in-hospital-mortality
+hospital_deaths_following_major_surgery,Appropriate and effective,Deaths after major surgery,Hospital Deaths Following Major Surgery,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,1.3,,0.80,2.23,Same as average performance,No change,Not a top result,No,1.6,1.7,2024-2025,1.2,2018-2019,8,Community — Medium,Lower rates are desirable.,This indicator measures the rate of in-hospital deaths due to all causes occurring within 30 days of major surgery.,hospital-deaths-following-major-surgery
+hospital_deaths_hsmr,Appropriate and effective,Hospital deaths (HSMR),Hospital Deaths (HSMR),Health system outputs: Appropriate and effective,HSMR,"ratio, Canada = 100",lower,Indicator,2025-2026,91,,80,103,Same as average performance,No change,,No,99,94,2024-2025,98,2016-2017,10,Community — Medium,Lower results are desirable.,"The ratio of the actual number of in-hospital deaths in a region or hospital to the number that would have been expected, based on the types of patients a region or hospital treats.",hospital-deaths-hsmr
+low_risk_caesarean_section_rate,Appropriate and effective,Low-risk C-section rate,Low-Risk Caesarean Section Rate,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2024-2025,21.3,,16.10,27.61,Same as average performance,Weakening,Not a top result,No,18.2,15.7,2023-2024,16.1,2015-2016,10,Community — Medium,A lower rate for this indicator is desirable,This indicator measures the rate of deliveries via Caesarean section (C-section) among singleton term cephalic pregnancies for low-risk nulliparous women in spontaneous labour.,low-risk-caesarean-sections
+all_patients_readmitted_to_hospital,Appropriate and effective,"Readmission, all patients",All Patients Readmitted to Hospital,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,8.7,,8.04,9.39,Above average performance,No change,Top result,Yes,9.7,10.2,2024-2025,8.2,2015-2016,11,Community — Medium,Lower rates are desirable.,"This indicator measures the risk-adjusted rate of urgent readmissions within 30 days of discharge for episodes of care for the following patient groups: obstetric, pediatric, surgical and medical.",all-patients-readmitted-to-hospital
+medical_patients_readmitted_to_hospital,Appropriate and effective,"Readmission, medical",Medical Patients Readmitted to Hospital,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,12.2,,11.08,13.34,Above average performance,No change,Top result,Yes,14.2,14.8,2024-2025,12.1,2015-2016,11,Community — Medium,Lower rates are desirable.,This indicator measures the risk-adjusted rate of urgent readmission for the medical patient group,medical-patients-readmitted-to-hospital
+obstetric_patients_readmitted_to_hospital,Appropriate and effective,"Readmission, obstetric",Obstetric Patients Readmitted to Hospital,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,1.8,,1.22,2.57,Same as average performance,No change,Not a top result,No,2.0,2.0,2024-2025,1.3,2015-2016,11,Community — Medium,Lower rates are desirable.,This indicator measures the risk-adjusted rate of urgent readmission for the obstetric patient group.,obstetric-patients-readmitted-to-hospital
+pediatric_patients_readmitted_to_hospital,Appropriate and effective,"Readmission, pediatric",Pediatric Patients Readmitted to Hospital,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,7.5,,5.48,10.09,Same as average performance,No change,Not a top result,No,6.6,7.0,2024-2025,5.9,2015-2016,11,Community — Medium,Lower rates are desirable.,This indicator measures the risk-adjusted rate of urgent readmission for patients age 17 and younger.,pediatric-patients-readmitted-to-hospital
+surgical_patients_readmitted_to_hospital,Appropriate and effective,"Readmission, surgical",Surgical Patients Readmitted to Hospital,Health system outputs: Appropriate and effective,Risk-adjusted rate,per 100,lower,Indicator,2025-2026,6.9,,5.83,8.12,Same as average performance,No change,Not a top result,No,7.0,7.5,2024-2025,6.1,2015-2016,11,Community — Medium,Lower rates are desirable.,This indicator measures the risk-adjusted rate of urgent readmission for the surgical patient group.,surgical-patients-readmitted-to-hospital
+total_time_spent_in_emergency_department_for_admitted_patien,Access to high-quality services,"ED time for admitted patients, 90th percentile",Total Time Spent in Emergency Department for Admitted Patients,"Health system outputs: Access to comprehensive, high-quality health services",90th percentile,hours,lower,Indicator,2025-2026,55.6,,,,Below average performance,Weakening,,,46.5,38.3,2024-2025,53.0,2021-2022,5,Community — Medium,The 90th percentile of this indicator represents the maximum length of time that 90% of patients admitted from the ED spend in the ED.,This indicator measures the time interval between the earlier of triage date/time or registration date/time and the date/time when a patient is admitted and leaves the emergency department (ED).,total-time-spent-in-emergency-department-for-admitted-patients
+emergency_department_wait_time_for_physician_initial_assessm,Access to high-quality services,"ED wait to physician, 90th percentile",Emergency Department Wait Time for Physician Initial Assessment,"Health system outputs: Access to comprehensive, high-quality health services",90th percentile,hours,lower,Indicator,2025-2026,7.6,,,,Below average performance,Weakening,,,5.3,4.3,2024-2025,7.5,2021-2022,5,Community — Medium,The 90th percentile of this indicator represents the maximum length of time that 90% of patients waited in the ED for a physician initial assessment.,This indicator measures the time interval between the earlier of triage date/time or registration date/time and the date/time of physician initial assessment in the emergency department (ED).,emergency-department-wait-time-for-physician-initial-assessment
+hip_fracture_surgery_within_48_hours,Access to high-quality services,Hip fracture surgery within 48 hours,Hip Fracture Surgery Within 48 Hours,"Health system outputs: Access to comprehensive, high-quality health services",Risk-adjusted rate,%,higher,Indicator,2025-2026,94.7,,89.86,97.31,Above average performance,No change,Not a top result,Yes,83.6,86.3,2024-2025,97.5,2012-2013,14,Community — Medium,Higher rates are desirable.,Proportion having surgery within 48 hours:,hip-fracture-surgery-within-48-hours
+cost_of_a_standard_hospital_stay,Efficiently delivered,Cost of a standard hospital stay,Cost of a Standard Hospital Stay,Health system outputs: Efficiently delivered,CSHS,dollars,lower,Indicator,2024-2025,8644,,,,Lower than average,Increasing more than average,,,9952,8296,2023-2024,8505,2020-2021,5,Community — Medium,"This indicator is a measure of the relative cost efficiency of a hospital’s acute inpatient care. It compares total acute inpatient expenses with the number of weighted inpatient cases, resulting in the average full cost of treating an acute inpatient.",This indicator measures the ratio of a hospital's total acute inpatient care expenses to the number of acute inpatient weighted cases related to the inpatients for which the hospital provided care.,cost-of-a-standard-hospital-stay-cshs
+number_of_acute_care_beds,Context,Acute care beds,Number of Acute Care Beds,,Number of acute care beds,beds,none,Contextual measure,2024-2025,154,,,,,,,,,,,,2024-2025,1,Community — Medium,,,
+number_of_acute_care_hospital_stays,Context,Acute care hospital stays,Number of Acute Care Hospital Stays,,Number of cases,stays,none,Contextual measure,2025-2026,11454,,,,,,,,,,2024-2025,10700,2021-2022,5,Community — Medium,,,
+average_acute_occupancy_rate,Context,Acute occupancy rate,Average Acute Occupancy Rate,Health system inputs and characteristics: Health system resources,Occupancy rate of acute beds,%,none,Contextual measure,2024-2025,88.9,,,,,,,,,,,,2024-2025,1,Community — Medium,A higher occupancy rate indicates higher utilization of acute care hospital beds.,"The percentage of acute care hospital beds that are occupied by patients, averaged over the year.",average-acute-occupancy-rate
+patients_admitted_through_the_emergency_department,Context,Admitted through the emergency department,Patients Admitted Through the Emergency Department,,Percent,%,none,Contextual measure,2025-2026,46.5,,,,,,,,,,2024-2025,47.3,2021-2022,5,Community — Medium,The percentage of patients admitted through the hospital’s ED.,The percentage of patients admitted through the hospital’s emergency department (ED),patients-admitted-through-the-emergency-department
+average_length_of_a_hospital_stay_days,Context,Average length of stay,Average Length of a Hospital Stay (Days),,Average,days,none,Contextual measure,2025-2026,5.2,,,,,,,,,,2024-2025,5.3,2021-2022,5,Community — Medium,The average number of days a patient stayed in hospital,The average number of days a patient stayed in a hospital,average-length-of-a-hospital-stay-days
+number_of_emergency_department_visits,Context,Emergency department visits,Number of Emergency Department Visits,,Number of cases,visits,none,Contextual measure,2025-2026,47877,,,,,,,,15671480,6607365,2024-2025,47216,2021-2022,5,Community — Medium,,,
+hospitalized_seniors_at_risk_of_frailty,Context,Hospitalized seniors at risk of frailty,Hospitalized Seniors at Risk of Frailty,Health system inputs and characteristics: Efficient allocation of resources,Hospitalized seniors at risk of frailty (%) (6 or more deficits),%,none,Indicator,2024-2025,45.6,,,,,,,,42.5,46.5,2023-2024,47.5,2015-2016,10,Community — Medium,"Higher levels of frailty are linked to a number of adverse outcomes among seniors. When frailty severity increases, so does the risk for these adverse outcomes.",This contextual measure quantifies the proportion of seniors at risk of frailty in acute care hospitals across Canada.,hospitalized-seniors-at-risk-of-frailty
+patient_days_in_alternate_level_of_care_percentage,Context,Patient days in alternate level of care,Patient Days in Alternate Level of Care (Percentage),,Percent,%,none,Contextual measure,2025-2026,15.9,,,,,,,,,16.5,2024-2025,22.9,2021-2022,5,Community — Medium,The proportion of days a patient was assigned to the ALC patient service in a hospital.,The proportion of days a patient was assigned to the alternate level of care (ALC) patient service.,patient-days-in-alternate-level-of-care-percentage
+</script>
+<script type="text/csv" data-dataset="trend">
+id,short,category,year,value,canada,ontario,cihi_comparison
+in_hospital_sepsis,In-hospital sepsis,Safe,2014-2015,2.5,4.0,4.6,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2015-2016,2.0,4.1,4.5,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2016-2017,2.4,3.9,4.4,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2017-2018,4.0,4.0,4.6,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2018-2019,4.9,3.9,4.6,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2019-2020,6.3,3.9,4.4,Below average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2020-2021,4.0,4.3,4.8,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2021-2022,7.2,4.8,5.3,Below average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2022-2023,5.8,4.4,4.7,Below average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2023-2024,3.1,4.1,4.2,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2024-2025,2.7,3.9,3.9,Same as average performance
+in_hospital_sepsis,In-hospital sepsis,Safe,2025-2026,2.7,3.8,3.7,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2014-2015,1.6,3.6,2.9,Above average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2015-2016,2.1,3.6,2.9,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2016-2017,2.6,3.7,3.0,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2017-2018,2.7,3.8,2.9,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2018-2019,3.1,3.7,2.9,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2019-2020,2.9,3.9,3.2,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2020-2021,3.2,4.0,3.3,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2021-2022,2.5,4.0,3.2,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2022-2023,2.5,4.1,3.5,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2023-2024,2.7,4.4,3.7,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2024-2025,3.0,4.7,4.2,Same as average performance
+obstetric_trauma_without_instrument,"Obstetric trauma, no instrument",Safe,2025-2026,3.5,5.0,4.3,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2014-2015,9.4,18.5,14.5,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2015-2016,6.6,18.7,14.6,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2016-2017,8.3,18.9,14.8,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2017-2018,8.8,18.4,14.2,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2018-2019,9.0,18.6,15.2,Above average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2019-2020,10.3,18.6,14.9,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2020-2021,14.5,18.9,15.0,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2021-2022,14.8,18.2,14.8,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2022-2023,15.7,18.1,14.9,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2023-2024,11.0,18.4,15.0,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2024-2025,20.2,19.4,16.4,Same as average performance
+obstetric_trauma_with_instrument,"Obstetric trauma, with instrument",Safe,2025-2026,14.6,20.2,16.9,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2014-2015,5.4,6.6,7.1,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2015-2016,10.2,6.6,6.9,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2016-2017,5.1,6.2,6.5,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2017-2018,8.4,6.3,6.7,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2018-2019,6.3,6.1,6.5,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2019-2020,13.7,6.1,6.4,Below average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2020-2021,3.0,5.9,6.3,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2021-2022,7.2,6.1,6.4,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2022-2023,3.8,6.3,6.6,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2023-2024,6.4,5.8,6.1,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2024-2025,6.8,5.7,6.0,Same as average performance
+30_day_acute_myocardial_infarction_in_hospital_mortality,30-day AMI in-hospital mortality,Appropriate and effective,2025-2026,5.9,5.5,5.7,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2018-2019,1.7,1.6,1.7,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2019-2020,1.3,1.5,1.7,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2020-2021,1.7,1.7,1.9,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2021-2022,1.7,2.0,2.1,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2022-2023,2.0,1.8,1.9,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2023-2024,1.9,1.7,1.8,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2024-2025,1.2,1.6,1.8,Same as average performance
+hospital_deaths_following_major_surgery,Deaths after major surgery,Appropriate and effective,2025-2026,1.3,1.6,1.7,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2016-2017,105,100,99,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2017-2018,95,100,101,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2018-2019,113,99,102,Below average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2019-2020,121,100,103,Below average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2020-2021,108,100,103,Below average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2021-2022,91,99,99,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2022-2023,92,99,97,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2023-2024,100,99,95,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2024-2025,98,99,95,Same as average performance
+hospital_deaths_hsmr,Hospital deaths (HSMR),Appropriate and effective,2025-2026,91,99,94,Same as average performance
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2015-2016,19.1,15.9,14.8,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2016-2017,13.5,15.6,14.1,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2017-2018,15.8,16.2,14.6,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2018-2019,15.5,16.3,14.5,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2019-2020,16.3,16.0,14.4,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2020-2021,14.5,17.6,16.2,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2021-2022,17.6,17.6,16.2,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2022-2023,12.7,18.0,16.5,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2023-2024,16.1,17.9,16.2,
+low_risk_caesarean_section_rate,Low-risk C-section rate,Appropriate and effective,2024-2025,21.3,18.2,15.7,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2015-2016,8.4,9.2,9.3,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2016-2017,8.5,9.2,9.3,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2017-2018,9.2,9.3,9.4,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2018-2019,8.7,9.4,9.5,Same as average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2019-2020,8.2,9.5,9.6,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2020-2021,7.9,9.4,9.7,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2021-2022,8.2,9.3,9.5,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2022-2023,7.6,9.0,9.3,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2023-2024,7.5,9.3,9.6,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2024-2025,8.2,9.4,9.8,Above average performance
+all_patients_readmitted_to_hospital,"Readmission, all patients",Appropriate and effective,2025-2026,8.7,9.7,10.2,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2015-2016,12.9,13.8,14.0,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2016-2017,12.8,13.8,13.9,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2017-2018,14.2,13.9,14.0,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2018-2019,13.5,14.1,14.3,Same as average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2019-2020,12.6,14.2,14.4,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2020-2021,12.3,14.1,14.5,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2021-2022,12.0,13.7,14.0,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2022-2023,11.0,13.6,14.0,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2023-2024,10.8,13.7,14.2,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2024-2025,12.1,13.9,14.4,Above average performance
+medical_patients_readmitted_to_hospital,"Readmission, medical",Appropriate and effective,2025-2026,12.2,14.2,14.8,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2015-2016,1.5,2.1,1.9,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2016-2017,1.5,2.1,1.9,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2017-2018,1.1,2.2,1.9,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2018-2019,0.7,2.2,2.0,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2019-2020,1.4,2.2,1.9,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2020-2021,0.9,2.0,1.8,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2021-2022,1.0,2.0,1.9,Above average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2022-2023,1.2,1.9,1.8,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2023-2024,1.1,1.9,2.0,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2024-2025,1.3,1.9,2.0,Same as average performance
+obstetric_patients_readmitted_to_hospital,"Readmission, obstetric",Appropriate and effective,2025-2026,1.8,2.0,2.0,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2015-2016,8.1,6.8,7.1,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2016-2017,5.5,6.9,7.1,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2017-2018,8.0,6.9,7.4,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2018-2019,7.7,6.9,7.0,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2019-2020,4.0,6.9,7.1,Above average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2020-2021,7.2,6.6,7.0,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2021-2022,6.8,6.7,6.9,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2022-2023,8.3,6.8,7.4,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2023-2024,7.5,6.9,7.3,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2024-2025,5.9,6.5,6.9,Same as average performance
+pediatric_patients_readmitted_to_hospital,"Readmission, pediatric",Appropriate and effective,2025-2026,7.5,6.6,7.0,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2015-2016,5.3,6.8,7.1,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2016-2017,6.9,6.8,7.0,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2017-2018,6.7,6.8,7.0,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2018-2019,6.3,6.8,6.9,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2019-2020,6.5,6.8,7.1,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2020-2021,5.6,7.0,7.3,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2021-2022,6.9,7.1,7.5,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2022-2023,5.2,6.5,6.8,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2023-2024,5.8,6.7,7.1,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2024-2025,6.1,6.9,7.4,Same as average performance
+surgical_patients_readmitted_to_hospital,"Readmission, surgical",Appropriate and effective,2025-2026,6.9,7.0,7.5,Same as average performance
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2021-2022,29.5,40.7,32.5,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2022-2023,49.8,49.0,45.0,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2023-2024,59.2,48.2,43.7,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2024-2025,53.0,48.5,44.4,
+total_time_spent_in_emergency_department_for_admitted_patien,"ED time for admitted patients, 90th percentile",Access to high-quality services,2025-2026,55.6,46.5,38.3,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2021-2022,3.9,4.2,3.7,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2022-2023,6.5,5.0,4.2,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2023-2024,7.0,5.2,4.4,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2024-2025,7.5,5.5,4.5,Below average performance
+emergency_department_wait_time_for_physician_initial_assessm,"ED wait to physician, 90th percentile",Access to high-quality services,2025-2026,7.6,5.3,4.3,Below average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2012-2013,97.4,82.6,83.0,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2013-2014,97.1,84.6,84.0,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2014-2015,93.6,86.3,85.2,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2015-2016,96.3,87.8,86.4,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2016-2017,95.2,87.5,86.3,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2017-2018,97.7,86.4,85.2,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2018-2019,96.0,87.6,86.9,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2019-2020,94.6,86.5,86.3,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2020-2021,98.9,85.5,84.6,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2021-2022,91.1,84.7,84.4,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2022-2023,91.5,81.9,81.7,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2023-2024,92.0,82.2,83.6,Same as average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2024-2025,97.5,83.1,84.7,Above average performance
+hip_fracture_surgery_within_48_hours,Hip fracture surgery within 48 hours,Access to high-quality services,2025-2026,94.7,83.6,86.3,Above average performance
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2020-2021,5861,8522,7365,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2021-2022,6065,8671,7230,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2022-2023,7395,8839,7524,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2023-2024,8505,9526,8080,
+cost_of_a_standard_hospital_stay,Cost of a standard hospital stay,Efficiently delivered,2024-2025,8644,9952,8296,Lower than average
+number_of_acute_care_beds,Acute care beds,Context,2024-2025,154,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2021-2022,9312,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2022-2023,9515,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2023-2024,10392,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2024-2025,10700,,,
+number_of_acute_care_hospital_stays,Acute care hospital stays,Context,2025-2026,11454,,,
+average_acute_occupancy_rate,Acute occupancy rate,Context,2024-2025,88.9,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2021-2022,46.2,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2022-2023,46.2,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2023-2024,44.9,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2024-2025,47.3,,,
+patients_admitted_through_the_emergency_department,Admitted through the emergency department,Context,2025-2026,46.5,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2021-2022,5.2,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2022-2023,5.3,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2023-2024,5.2,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2024-2025,5.3,,,
+average_length_of_a_hospital_stay_days,Average length of stay,Context,2025-2026,5.2,,,
+number_of_emergency_department_visits,Emergency department visits,Context,2021-2022,49062,13998229,5831853,
+number_of_emergency_department_visits,Emergency department visits,Context,2022-2023,44935,15129435,6213463,
+number_of_emergency_department_visits,Emergency department visits,Context,2023-2024,44132,15498771,6430455,
+number_of_emergency_department_visits,Emergency department visits,Context,2024-2025,47216,16103265,6616793,
+number_of_emergency_department_visits,Emergency department visits,Context,2025-2026,47877,15671480,6607365,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2015-2016,39.7,38.5,41.1,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2016-2017,39.5,38.4,40.8,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2017-2018,38.9,38.4,40.3,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2018-2019,37.7,38.1,40.4,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2019-2020,35.7,38.1,40.2,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2020-2021,40.6,39.5,42.2,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2021-2022,43.0,39.3,42.4,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2022-2023,49.0,42.0,45.5,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2023-2024,47.5,42.3,46.2,
+hospitalized_seniors_at_risk_of_frailty,Hospitalized seniors at risk of frailty,Context,2024-2025,45.6,42.5,46.5,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2021-2022,17.0,,16.7,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2022-2023,25.6,,18.3,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2023-2024,23.2,,17.9,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2024-2025,22.9,,18.3,
+patient_days_in_alternate_level_of_care_percentage,Patient days in alternate level of care,Context,2025-2026,15.9,,16.5,
+</script>
+<script type="text/csv" data-dataset="targets">
+id,qip_num,short,indicator,qip_type,unit,direction,source,period,current,target,target_justification,exec_comp,p4r,prior_current,prior_target,prior_period,cihi_id
+offload,1,"Ambulance offload time, 90th percentile",90th percentile ambulance offload time,Provincial priority,minutes,lower,CIHI NACRS,"Dec 1, 2024 to Nov 30, 2025",36.00,30.00,There has been great success achieved with this metric over the past year and periods where target of 30 minutes has been achieved. Fiscal 2026/27 will solidify processes and work on sustainability.,Yes,Yes,100.00,43.00,"Dec 1, 2023 to Nov 30, 2024",
+pia,2,"ED wait to physician, 90th percentile",90th percentile emergency department wait time to physician initial assessment,Provincial priority,hours,lower,CIHI NACRS,"Dec 1, 2024 to Nov 30, 2025",7.40,4.50,Average performance of regional partners.,Yes,Yes,7.40,4.60,"Dec 1, 2023 to Nov 30, 2024",emergency_department_wait_time_for_physician_initial_assessm
+bedwait,3,Patients waiting for an inpatient bed at 8 a.m.,Daily average number of patients waiting in the emergency department for an inpatient bed at 8 a.m.,Provincial priority,patients,lower,CIHI NACRS,"Apr 1, 2024 to Mar 31, 2025",11.56,9.15,25% reduction from actual performance at the time target was set (January/February).,Yes,Yes,,,,
+conservable,4,Conservable bed days,"Conservable bed days, acute medical inpatients",Custom,bed days per day,lower,Hospital collected data,2025-26,34.20,27.00,Target areas with the highest contribution towards conservable bed days to focus efforts.,Yes,No,,,,
+ctas1,5,"CTAS-1 wait to physician, 90th percentile",90th percentile emergency department wait time to physician initial assessment for CTAS-1 patients,Custom,minutes,lower,Hospital collected data,2025-26,31.00,30.00,"A substantial amount of work has occurred in fiscal 2025-26 to address the PIA time for the sickest patients (CTAS-1). Fiscal 2026-27 will solidify processes and sustainability, especially as the hospital transitions from a paper-based emergency department to a fully electronic health information system in Fall 2026.",Yes,No,6.90,4.00,"2025/26 cycle, CTAS 1 and 2 combined, hours",
+discharge_info,6,Discharge information given to patients,"Percentage of survey respondents who answered ""completely"" when asked whether they received enough information from hospital staff about what to do if they were worried about their condition or treatment after leaving the hospital",Optional,%,higher,Local data collection,Most recent consecutive 12-month period,58.42,74.27,25% improvement from baseline when the target was set (Jan/Feb 2026).,Yes,No,,,,
+</script>
+<script>
+// A stand-in for the artifact host's `dash` runtime, covering the three calls the page
+// makes. Datasets come from the inlined CSV above; derived datasets are evaluated lazily
+// and memoised, so a calc that depends on another resolves without ordering rules.
+window.dash = (() => {
+  const loaded = new Map();
+  const calcs = new Map();
+  const derived = new Map();
+  const draws = [];
+
+  document.querySelectorAll('script[type="text/csv"][data-dataset]').forEach((node) => {
+    const id = node.dataset.dataset;
+    try {
+      loaded.set(id, {status: 'ok', data: d3.csvParse(node.textContent.trim())});
+    } catch (err) {
+      console.error('dataset failed to parse:', id, err);
+      loaded.set(id, {status: 'error', data: []});
+    }
+  });
+
+  const data = (id) => {
+    if (loaded.has(id)) return loaded.get(id);
+    if (derived.has(id)) return derived.get(id);
+    const spec = calcs.get(id);
+    if (!spec) return {status: 'error', data: []};
+    let result;
+    try {
+      const args = (spec.inputs || []).map((name) => {
+        const got = data(name);
+        if (got.status !== 'ok') throw new Error('input not available: ' + name);
+        return got.data;
+      });
+      result = {status: 'ok', data: spec.fn.apply(null, args)};
+    } catch (err) {
+      console.error('calc failed:', id, err);
+      result = {status: 'error', data: []};
+    }
+    derived.set(id, result);
+    return result;
+  };
+
+  // The page registers every calc before any draw, then expects the host to paint. Draws
+  // are queued and flushed once the page's own script has finished running.
+  const flush = () => draws.forEach(([name, fn]) => {
+    document.querySelectorAll('[data-draw="' + name + '"]').forEach((el) => {
+      try { fn(el); } catch (err) { console.error('draw failed:', name, err); }
+    });
+  });
+  document.addEventListener('DOMContentLoaded', flush);
+
+  return {
+    data: data,
+    calc: (id, spec) => calcs.set(id, spec),
+    draw: (name, fn) => draws.push([name, fn])
+  };
+})();
+</script>
+<script>
+(() => {
+  const CLS = {Green: 'cmh-is-green', Yellow: 'cmh-is-yellow', Red: 'cmh-is-red', Suppressed: 'cmh-is-suppressed', None: 'cmh-is-suppressed'};
+  const VAR = {Green: 'var(--cmh-ok)', Yellow: 'var(--cmh-mid)', Red: 'var(--cmh-bad)', Suppressed: 'var(--cmh-none)', None: 'var(--cmh-none)'};
+  const LABEL = {Green: 'Above average', Yellow: 'Same as average', Red: 'Below average', Suppressed: 'Not reported', None: 'Not graded'};
+  const QIP_LABEL = {Green: 'At target', Yellow: 'Within 10%', Red: 'Gap to close'};
+  // CIHI's contextual measures carry no performance comparison, a suppressed indicator
+  // has no result to show, and cost sits outside what this dashboard tracks, so none of
+  // the three is given a card or a table row.
+  const HIDDEN_CATEGORIES = new Set(['Context', 'Efficiently delivered']);
+  const isShown = (row) => !HIDDEN_CATEGORIES.has(row.category) && row.cihi_comparison !== 'Suppressed';
+  const fmt2 = d3.format('.2~f');
+  const fmt1 = d3.format('.1f');
+  const fmtThousands = d3.format(',');
+  const fmt0 = d3.format('.0f');
+
+  dash.calc('status', {
+    inputs: ['indicators'],
+    title: 'Status from CIHI comparison',
+    description: "Turns CIHI's published performance comparison into a green, slate or red status, and works out each indicator's gap from the Canadian and Ontario figures for the same year.",
+    fn: (indicators) => {
+      const statusOf = (comparison) => {
+        if (comparison === 'Above average performance' || comparison === 'Lower than average') return 'Green';
+        if (comparison === 'Same as average performance') return 'Yellow';
+        if (comparison === 'Below average performance' || comparison === 'Increasing more than average') return 'Red';
+        if (comparison === 'Suppressed') return 'Suppressed';
+        return 'None';
+      };
+      return indicators.map((row) => {
+        const value = row.value === '' ? null : Number(row.value);
+        const gapTo = (other) => {
+          if (value === null || other === '' || other == null) return null;
+          const base = Number(other);
+          if (!base) return null;
+          const raw = (value - base) / base * 100;
+          return row.direction === 'higher' ? raw : -raw;
+        };
+        const prior = row.prior_value === '' ? null : Number(row.prior_value);
+        return {
+          id: row.id,
+          status: statusOf(row.cihi_comparison),
+          gap_canada_pct: gapTo(row.canada),
+          gap_ontario_pct: gapTo(row.ontario),
+          change_from_prior: value === null || prior === null ? null : value - prior
+        };
+      });
+    }
+  });
+
+  dash.calc('counts', {
+    inputs: ['status', 'indicators'],
+    title: 'Indicators by status',
+    description: 'How many of the indicators shown are above average, no different from average, or below average. Contextual measures and the one suppressed indicator are excluded, so the three figures add up to the number of indicators on the dashboard.',
+    fn: (status, indicators) => {
+      const graded = new Set(indicators.filter(isShown).map((row) => row.id));
+      const only = status.filter((row) => graded.has(row.id));
+      const howMany = (name) => only.filter((row) => row.status === name).length;
+      return [{green: howMany('Green'), yellow: howMany('Yellow'), red: howMany('Red'), total: only.length}];
+    }
+  });
+
+  dash.calc('gaps', {
+    inputs: ['indicators', 'status'],
+    title: 'Gap from the Canadian average',
+    description: 'The graded indicators that have a Canadian figure to compare with, ordered from the largest advantage to the largest shortfall.',
+    fn: (indicators, status) => {
+      const found = new Map(status.map((row) => [row.id, row]));
+      return indicators
+        .filter(isShown)
+        .map((row) => ({id: row.id, short: row.short, gap_canada_pct: found.get(row.id).gap_canada_pct, status: found.get(row.id).status}))
+        .filter((row) => row.gap_canada_pct !== null)
+        .sort((a, b) => b.gap_canada_pct - a.gap_canada_pct);
+    }
+  });
+
+  dash.calc('qip', {
+    inputs: ['targets'],
+    title: 'Target attainment',
+    description: "Measures how far each QIP commitment still has to travel from its baseline to the target the hospital set, and places it in one of three bands. The ten per cent band is a local convention; the QIP itself defines no tolerance.",
+    fn: (targets) => targets.map((row) => {
+      const current = Number(row.current);
+      const target = Number(row.target);
+      const reached = row.direction === 'higher' ? current >= target : current <= target;
+      const shortfall = Math.abs(current - target);
+      const band = Math.abs(target) * 0.1;
+      const priorCurrent = row.prior_current === '' ? null : Number(row.prior_current);
+      return {
+        id: row.id,
+        status: reached ? 'Green' : shortfall <= band ? 'Yellow' : 'Red',
+        shortfall: reached ? 0 : shortfall,
+        shortfall_pct: target ? shortfall / Math.abs(target) * 100 : null,
+        change_from_prior: priorCurrent === null ? null : current - priorCurrent
+      };
+    })
+  });
+
+  dash.calc('qip_counts', {
+    inputs: ['qip'],
+    title: 'QIP commitments by attainment',
+    description: 'How many of the QIP commitments already sit at or past their target, are within ten per cent of it, or have further to go.',
+    fn: (qip) => {
+      const howMany = (name) => qip.filter((row) => row.status === name).length;
+      return [{met: howMany('Green'), close: howMany('Yellow'), off: howMany('Red'), total: qip.length}];
+    }
+  });
+
+  const ready = (...ids) => ids.every((id) => dash.data(id).status === 'ok');
+  const failed = (...ids) => ids.some((id) => dash.data(id).status === 'error');
+  const index = (rows) => new Map(rows.map((row) => [row.id, row]));
+
+  const showFail = (el) => {
+    const dot = document.createElement('i');
+    dot.className = 'cmh-fail-dot';
+    const text = document.createElement('span');
+    text.className = 'cmh-fail-text';
+    text.textContent = 'Failed to load';
+    const box = document.createElement('div');
+    box.className = 'cmh-fail';
+    box.append(dot, text);
+    el.replaceChildren(box);
+  };
+
+  const showValue = (value, unit) => {
+    if (value === '' || value == null) return 'Not reported';
+    const n = Number(value);
+    if (unit === 'dollars') return '$' + fmtThousands(Math.round(n));
+    if (unit === '%') return fmt1(n) + '%';
+    if (n >= 10000) return fmtThousands(Math.round(n));
+    return fmt2(n);
+  };
+  const showUnit = (unit) => (unit === 'dollars' || unit === '%' ? '' : unit);
+
+  const drawCount = (name, field) => dash.draw(name, (el) => {
+    const got = dash.data('counts');
+    el.textContent = got.status === 'ok' && got.data.length ? fmtThousands(got.data[0][field]) : '—';
+  });
+  drawCount('tile_green', 'green');
+  drawCount('tile_yellow', 'yellow');
+  drawCount('tile_red', 'red');
+
+  const drawQipCount = (name, field) => dash.draw(name, (el) => {
+    const got = dash.data('qip_counts');
+    el.textContent = got.status === 'ok' && got.data.length ? fmtThousands(got.data[0][field]) : '—';
+  });
+  drawQipCount('qip_met', 'met');
+  drawQipCount('qip_close', 'close');
+  drawQipCount('qip_off', 'off');
+
+  dash.draw('peer', (el) => {
+    const got = dash.data('indicators');
+    if (got.status !== 'ok') { el.textContent = '—'; return; }
+    const row = got.data.find((r) => r.id === 'hospital_deaths_hsmr');
+    el.textContent = row ? row.peer_group : '—';
+  });
+
+  const sparkline = (box, series, status, aim) => {
+    const width = Math.max(120, box.clientWidth || 240);
+    const height = 46;
+    const pad = {top: 6, right: 30, bottom: 12, left: 2};
+    const points = series.filter((d) => d.value !== '');
+    if (points.length < 2) {
+      const only = document.createElement('div');
+      only.className = 'cmh-meta';
+      only.textContent = points.length === 1 ? 'One year of data' : 'No series published';
+      box.replaceChildren(only);
+      return;
+    }
+    const svg = d3.create('svg').attr('width', '100%').attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img');
+    const x = d3.scalePoint(points.map((d) => d.year), [pad.left, width - pad.right]);
+    const values = points.map((d) => Number(d.value));
+    const canadaValues = points.filter((d) => d.canada !== '').map((d) => Number(d.canada));
+    const span = d3.extent(values.concat(canadaValues).concat(aim == null ? [] : [aim]));
+    const y = d3.scaleLinear(span[0] === span[1] ? [span[0] - 1, span[1] + 1] : span, [height - pad.bottom, pad.top]);
+
+    if (canadaValues.length > 1) {
+      svg.append('path')
+        .attr('fill', 'none').attr('stroke', 'var(--cds-chart-muted)').attr('stroke-width', 1).attr('stroke-dasharray', '3 2')
+        .attr('d', d3.line().x((d) => x(d.year)).y((d) => y(Number(d.canada)))(points.filter((d) => d.canada !== '')));
+    }
+    if (aim != null) {
+      svg.append('line')
+        .attr('x1', pad.left).attr('x2', width - pad.right)
+        .attr('y1', y(aim)).attr('y2', y(aim))
+        .attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1).attr('stroke-dasharray', '1 3');
+      svg.append('text')
+        .attr('x', width - pad.right + 3).attr('y', y(aim) + 3)
+        .attr('fill', 'var(--color-fg-muted)').attr('font-size', 10)
+        .text('target');
+    }
+    svg.append('path')
+      .attr('fill', 'none').attr('stroke', VAR[status]).attr('stroke-width', 2)
+      .attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round')
+      .attr('d', d3.line().x((d) => x(d.year)).y((d) => y(Number(d.value)))(points));
+    const last = points[points.length - 1];
+    svg.append('circle').attr('cx', x(last.year)).attr('cy', y(Number(last.value))).attr('r', 2.5).attr('fill', VAR[status]);
+    svg.append('text')
+      .attr('x', pad.left).attr('y', height - 2)
+      .attr('fill', 'var(--color-fg-muted)').attr('font-size', 10)
+      .text(points[0].year.slice(0, 4));
+    svg.append('text')
+      .attr('x', width - pad.right).attr('y', height - 2).attr('text-anchor', 'end')
+      .attr('fill', 'var(--color-fg-muted)').attr('font-size', 10)
+      .text(last.year.slice(0, 4));
+    box.replaceChildren(svg.node());
+  };
+
+  const showQipValue = (value, unit) => {
+    if (value === '' || value == null) return 'Not reported';
+    const n = Number(value);
+    return (unit === '%' ? fmt2(n) + '%' : fmt2(n));
+  };
+  const showQipUnit = (unit) => (unit === '%' ? '' : unit);
+
+  const makeCard = (row, stat, series, target) => {
+    const card = document.createElement('div');
+    card.className = 'cmh-card ' + CLS[stat.status];
+
+    const head = document.createElement('div');
+    head.className = 'cmh-ind-head';
+    const name = document.createElement('div');
+    name.className = 'cmh-ind-name';
+    name.textContent = row.short;
+    const pill = document.createElement('span');
+    pill.className = 'cmh-pill';
+    const pillDot = document.createElement('i');
+    pillDot.className = 'cmh-dot';
+    const pillText = document.createElement('span');
+    pillText.textContent = LABEL[stat.status];
+    pill.append(pillDot, pillText);
+    head.append(name, pill);
+
+    const figure = document.createElement('div');
+    figure.className = 'cmh-figure';
+    const big = document.createElement('div');
+    big.className = 'cmh-figure-value';
+    big.textContent = showValue(row.value, row.unit);
+    figure.append(big);
+    const unitText = showUnit(row.unit);
+    if (unitText) {
+      const unit = document.createElement('div');
+      unit.className = 'cmh-figure-unit';
+      unit.textContent = unitText;
+      figure.append(unit);
+    }
+    const yearTag = document.createElement('div');
+    yearTag.className = 'cmh-figure-unit';
+    yearTag.textContent = row.year;
+    figure.append(yearTag);
+
+    const bench = document.createElement('div');
+    bench.className = 'cmh-meta';
+    const parts = [];
+    if (row.canada !== '') parts.push('Canada ' + showValue(row.canada, row.unit));
+    if (row.ontario !== '') parts.push('Ontario ' + showValue(row.ontario, row.unit));
+    if (row.ci_low !== '' && row.ci_high !== '') parts.push('95% CI ' + showValue(row.ci_low, row.unit) + ' to ' + showValue(row.ci_high, row.unit));
+    bench.textContent = parts.join(' · ') || 'No benchmark published';
+
+    const spark = document.createElement('div');
+    spark.className = 'cmh-spark';
+
+    const trend = document.createElement('div');
+    trend.className = 'cmh-meta';
+    const trendWord = document.createElement('b');
+    trendWord.textContent = row.cihi_trend || 'No trend published';
+    trend.append(trendWord);
+    if (stat.change_from_prior !== null && row.prior_year) {
+      const moved = stat.change_from_prior;
+      const arrow = moved > 0 ? '↑' : moved < 0 ? '↓' : '→';
+      trend.append(document.createTextNode(' · ' + arrow + ' ' + showValue(Math.abs(moved), row.unit === '%' ? '' : row.unit) + ' from ' + row.prior_year));
+    }
+
+    const src = document.createElement('div');
+    src.className = 'cmh-src';
+    src.textContent = row.indicator + ' · ' + row.metric + ' · ' + row.years_of_data + ' years published';
+
+    card.append(head, figure, bench, spark, trend);
+    const sameUnit = target && target.unit === row.unit;
+    if (target) {
+      const aim = document.createElement('div');
+      aim.className = 'cmh-meta';
+      const aimValue = document.createElement('b');
+      aimValue.textContent = showQipValue(target.target, target.unit) + ' ' + target.unit;
+      aim.append(document.createTextNode('QIP 2026/27 target '), aimValue);
+      aim.append(document.createTextNode(sameUnit ? ', the dotted line above' : ''));
+      aim.append(document.createTextNode(' · QIP reports ' + showQipValue(target.current, target.unit) + ' for ' + target.period));
+      card.append(aim);
+    }
+    card.append(src);
+    requestAnimationFrame(() => sparkline(spark, series, stat.status, sameUnit ? Number(target.target) : null));
+    return card;
+  };
+
+  const drawCards = (name, category) => dash.draw(name, (el) => {
+    if (failed('indicators', 'status', 'trend')) { showFail(el); return; }
+    if (!ready('indicators', 'status', 'trend')) {
+      el.replaceChildren();
+      el.classList.add('dash-skeleton');
+      return;
+    }
+    el.classList.remove('dash-skeleton');
+    const stats = index(dash.data('status').data);
+    const bySeries = d3.group(dash.data('trend').data, (d) => d.id);
+    const got = dash.data('targets');
+    const byCihi = new Map(got.status === 'ok' ? got.data.filter((r) => r.cihi_id !== '').map((r) => [r.cihi_id, r]) : []);
+    const cards = dash.data('indicators').data
+      .filter((row) => row.category === category && isShown(row))
+      .map((row) => makeCard(row, stats.get(row.id), bySeries.get(row.id) || [], byCihi.get(row.id)));
+    el.replaceChildren(...cards);
+  });
+  drawCards('cards_safe', 'Safe');
+  drawCards('cards_effective', 'Appropriate and effective');
+  drawCards('cards_access', 'Access to high-quality services');
+
+  const makeTargetCard = (row, stat) => {
+    const card = document.createElement('div');
+    card.className = 'cmh-card ' + CLS[stat.status];
+
+    const head = document.createElement('div');
+    head.className = 'cmh-ind-head';
+    const name = document.createElement('div');
+    name.className = 'cmh-ind-name';
+    name.textContent = row.short;
+    const pill = document.createElement('span');
+    pill.className = 'cmh-pill';
+    const pillDot = document.createElement('i');
+    pillDot.className = 'cmh-dot';
+    const pillText = document.createElement('span');
+    pillText.textContent = QIP_LABEL[stat.status];
+    pill.append(pillDot, pillText);
+    head.append(name, pill);
+
+    const figure = document.createElement('div');
+    figure.className = 'cmh-figure';
+    const big = document.createElement('div');
+    big.className = 'cmh-figure-value';
+    big.textContent = showQipValue(row.current, row.unit);
+    figure.append(big);
+    const unitText = showQipUnit(row.unit);
+    if (unitText) {
+      const unit = document.createElement('div');
+      unit.className = 'cmh-figure-unit';
+      unit.textContent = unitText;
+      figure.append(unit);
+    }
+    const aimed = document.createElement('div');
+    aimed.className = 'cmh-figure-unit';
+    aimed.textContent = 'target ' + showQipValue(row.target, row.unit) + (unitText ? ' ' + unitText : '');
+    figure.append(aimed);
+
+    const current = Number(row.current);
+    const target = Number(row.target);
+    const top = Math.max(current, target) * 1.1 || 1;
+    const bar = document.createElement('div');
+    bar.className = 'cmh-bar';
+    const fill = document.createElement('div');
+    fill.className = 'cmh-bar-fill';
+    fill.style.width = (current / top * 100).toFixed(1) + '%';
+    const mark = document.createElement('div');
+    mark.className = 'cmh-bar-mark';
+    mark.style.left = (target / top * 100).toFixed(1) + '%';
+    bar.append(fill, mark);
+
+    const pair = document.createElement('div');
+    pair.className = 'cmh-pair';
+    const left = document.createElement('div');
+    if (stat.status === 'Green') {
+      left.textContent = row.direction === 'higher' ? 'Already at or past the target' : 'Already at or under the target';
+    } else {
+      const amount = document.createElement('b');
+      amount.textContent = showQipValue(stat.shortfall, row.unit) + (unitText ? ' ' + unitText : '');
+      left.append(amount, document.createTextNode(' to go, ' + fmt0(stat.shortfall_pct) + '% of the target'));
+    }
+    const right = document.createElement('div');
+    right.textContent = row.direction === 'higher' ? 'higher is better' : 'lower is better';
+    pair.append(left, right);
+
+    const moved = document.createElement('div');
+    moved.className = 'cmh-meta';
+    if (row.prior_current !== '') {
+      const change = stat.change_from_prior;
+      const arrow = change > 0 ? '↑' : change < 0 ? '↓' : '→';
+      moved.append(document.createTextNode('Previous cycle ' + showQipValue(row.prior_current, row.unit) + ' against a target of ' + showQipValue(row.prior_target, row.unit) + ' · '));
+      const word = document.createElement('b');
+      word.textContent = arrow + ' ' + showQipValue(Math.abs(change), row.unit) + (unitText ? ' ' + unitText : '');
+      moved.append(word);
+      if (row.prior_period) moved.append(document.createTextNode(' · ' + row.prior_period));
+    } else {
+      moved.textContent = 'First cycle this commitment was set';
+    }
+
+    const why = document.createElement('div');
+    why.className = 'cmh-why';
+    why.textContent = row.target_justification;
+
+    const tags = document.createElement('div');
+    tags.className = 'cmh-tags';
+    const tagWords = [row.qip_type + ' indicator'];
+    if (row.exec_comp === 'Yes') tagWords.push('Executive compensation');
+    if (row.p4r === 'Yes') tagWords.push('Pay-for-Results');
+    tagWords.forEach((word) => {
+      const tag = document.createElement('span');
+      tag.textContent = word;
+      tags.append(tag);
+    });
+
+    const src = document.createElement('div');
+    src.className = 'cmh-src';
+    src.textContent = row.indicator + ' · ' + row.source + ' · ' + row.period;
+
+    card.append(head, figure, bar, pair, moved, why, tags, src);
+    return card;
+  };
+
+  const drawTargetCards = (name, keep) => dash.draw(name, (el) => {
+    if (failed('targets', 'qip')) { showFail(el); return; }
+    if (!ready('targets', 'qip')) {
+      el.replaceChildren();
+      el.classList.add('dash-skeleton');
+      return;
+    }
+    el.classList.remove('dash-skeleton');
+    const stats = index(dash.data('qip').data);
+    const cards = dash.data('targets').data
+      .filter(keep)
+      .map((row) => makeTargetCard(row, stats.get(row.id)));
+    el.replaceChildren(...cards);
+  });
+  drawTargetCards('cards_qip_priority', (row) => row.qip_type === 'Provincial priority');
+  drawTargetCards('cards_qip_other', (row) => row.qip_type !== 'Provincial priority');
+
+  const TINT = {Green: 'cmh-cell cmh-cell-green', Yellow: 'cmh-cell cmh-cell-yellow', Red: 'cmh-cell cmh-cell-red', Suppressed: 'cmh-cell cmh-cell-suppressed', None: 'cmh-cell cmh-cell-suppressed'};
+  const SEVERITY = {Red: 0, Yellow: 1, Green: 2, Suppressed: 3, None: 4};
+  const THIS_YEAR = '2025-2026';
+
+  dash.draw('table_rows', (el) => {
+    if (!ready('indicators', 'status')) { el.replaceChildren(); return; }
+    const stats = index(dash.data('status').data);
+    const rows = dash.data('indicators').data
+      .filter(isShown)
+      .slice()
+      .sort((a, b) => {
+        const byStatus = SEVERITY[stats.get(a.id).status] - SEVERITY[stats.get(b.id).status];
+        if (byStatus !== 0) return byStatus;
+        const gapA = stats.get(a.id).gap_canada_pct;
+        const gapB = stats.get(b.id).gap_canada_pct;
+        if (gapA === null && gapB === null) return a.short.localeCompare(b.short);
+        if (gapA === null) return 1;
+        if (gapB === null) return -1;
+        return gapA - gapB;
+      })
+      .map((row) => {
+        const stat = stats.get(row.id);
+        const tr = document.createElement('tr');
+        tr.dataset.key = row.id;
+
+        const nameCell = document.createElement('td');
+        nameCell.className = 'cmh-wrap';
+        nameCell.textContent = row.short;
+        // a percentage already carries its sign on the figure, so it needs no suffix
+        if (row.unit && row.unit !== '%') {
+          const suffix = document.createElement('span');
+          suffix.className = 'cmh-unit-suffix';
+          suffix.textContent = ' · ' + row.unit;
+          nameCell.append(suffix);
+        }
+
+        const statusCell = document.createElement('td');
+        statusCell.className = TINT[stat.status];
+        const badge = document.createElement('span');
+        badge.className = 'cmh-status-cell';
+        const dot = document.createElement('i');
+        dot.className = 'cmh-dot';
+        const word = document.createElement('span');
+        word.textContent = LABEL[stat.status];
+        badge.append(dot, word);
+        statusCell.append(badge);
+
+        const valueCell = document.createElement('td');
+        valueCell.className = 'cmh-num ' + TINT[stat.status];
+        valueCell.textContent = showValue(row.value, row.unit);
+
+        const yearCell = document.createElement('td');
+        if (row.year !== THIS_YEAR) {
+          yearCell.className = 'cmh-stale';
+          yearCell.textContent = row.year + ', not yet refreshed';
+        } else {
+          yearCell.textContent = row.year;
+        }
+
+        const plain = [
+          [row.ontario === '' ? '—' : showValue(row.ontario, row.unit), 'cmh-num'],
+          [row.canada === '' ? '—' : showValue(row.canada, row.unit), 'cmh-num'],
+          [row.category, ''],
+          [row.cihi_trend || '—', '']
+        ].map(([text, cls]) => {
+          const td = document.createElement('td');
+          if (cls) td.className = cls;
+          td.textContent = text;
+          return td;
+        });
+
+        tr.append(nameCell, statusCell, valueCell, plain[0], plain[1], plain[2], plain[3], yearCell);
+        return tr;
+      });
+    el.replaceChildren(...rows);
+  });
+
+  dash.draw('gap_chart', (el) => {
+    let tip = el.querySelector('.cmh-tip');
+    if (!tip) { tip = document.createElement('div'); tip.className = 'cmh-tip'; }
+    if (failed('indicators', 'gaps')) { el.replaceChildren(); showFail(el); return; }
+    if (!ready('indicators', 'gaps')) {
+      el.replaceChildren(tip);
+      el.classList.add('dash-skeleton');
+      el.style.minHeight = '20rem';
+      return;
+    }
+    el.classList.remove('dash-skeleton');
+
+    const rows = dash.data('gaps').data;
+    const byId = index(dash.data('indicators').data);
+    const width = Math.max(260, el.clientWidth || 640);
+    const narrow = width < 620;
+    const rowH = narrow ? 48 : 32;
+    const top = 18;
+    const bottom = 34;
+
+    const svg = d3.create('svg').attr('width', '100%');
+    let labelW = 0;
+    if (!narrow) {
+      const measure = svg.append('g').attr('opacity', 0);
+      rows.forEach((d) => {
+        const t = measure.append('text').attr('font-size', 12).attr('font-family', 'var(--font-anthropic-sans)').text(d.short);
+        labelW = Math.max(labelW, t.node().getComputedTextLength());
+      });
+      measure.remove();
+    }
+    const left = narrow ? 0 : Math.min(labelW + 14, width * 0.42);
+    const right = 44;
+    const height = top + rows.length * rowH + bottom;
+    svg.attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img');
+
+    const reach = Math.max(10, d3.max(rows, (d) => Math.abs(d.gap_canada_pct)) * 1.12);
+    const x = d3.scaleLinear([-reach, reach], [left, width - right]);
+    const y = d3.scaleBand(rows.map((d) => d.id), [top, top + rows.length * rowH]).paddingInner(narrow ? 0.55 : 0.3);
+
+    const axis = svg.append('g')
+      .attr('transform', `translate(0,${top + rows.length * rowH})`)
+      .call(d3.axisBottom(x).ticks(width < 460 ? 4 : 7).tickFormat((v) => (v > 0 ? '+' : '') + v + '%').tickSize(0).tickPadding(8));
+    axis.attr('font-size', null).attr('font-family', null);
+    axis.select('.domain').attr('stroke', 'var(--cds-chart-axis)');
+    axis.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11);
+
+    svg.selectAll('.cmh-gl').data(x.ticks(width < 460 ? 4 : 7).filter((v) => v !== 0)).join('line')
+      .attr('class', 'cmh-gl')
+      .attr('x1', (v) => x(v)).attr('x2', (v) => x(v)).attr('y1', top).attr('y2', top + rows.length * rowH)
+      .attr('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 1);
+    svg.append('line')
+      .attr('x1', x(0)).attr('x2', x(0)).attr('y1', top).attr('y2', top + rows.length * rowH)
+      .attr('stroke', 'var(--cds-chart-reference)').attr('stroke-width', 1);
+    svg.append('text')
+      .attr('x', x(0)).attr('y', top - 6).attr('text-anchor', 'middle')
+      .attr('fill', 'var(--color-fg-muted)').attr('font-size', 11)
+      .text('Canadian average');
+    svg.append('text')
+      .attr('x', width - right).attr('y', height - 4).attr('text-anchor', 'end')
+      .attr('fill', 'var(--color-fg-muted)').attr('font-size', 11)
+      .text('better →');
+
+    const barH = Math.min(narrow ? 13 : 16, y.bandwidth());
+    const barY = (d) => y(d.id) + (y.bandwidth() - barH) / 2 + (narrow ? 9 : 0);
+    const groups = svg.selectAll('.cmh-grow').data(rows, (d) => d.id).join('g').attr('class', 'cmh-grow');
+
+    groups.append('rect')
+      .attr('x', (d) => Math.min(x(0), x(d.gap_canada_pct)))
+      .attr('y', barY)
+      .attr('width', (d) => Math.max(1, Math.abs(x(d.gap_canada_pct) - x(0))))
+      .attr('height', barH).attr('rx', 3)
+      .attr('fill', (d) => VAR[d.status]);
+
+    groups.append('text')
+      .attr('x', (d) => (d.gap_canada_pct >= 0 ? x(d.gap_canada_pct) + 6 : x(d.gap_canada_pct) - 6))
+      .attr('y', (d) => barY(d) + barH / 2)
+      .attr('text-anchor', (d) => (d.gap_canada_pct >= 0 ? 'start' : 'end'))
+      .attr('dominant-baseline', 'middle')
+      .attr('fill', 'var(--color-fg-muted)').attr('font-size', 11)
+      .text((d) => (d.gap_canada_pct > 0 ? '+' : '') + fmt1(d.gap_canada_pct) + '%');
+
+    groups.append('text')
+      .attr('x', (d) => (narrow ? x(0) : left - 14))
+      .attr('y', (d) => (narrow ? y(d.id) + 7 : barY(d) + barH / 2))
+      .attr('text-anchor', narrow ? 'start' : 'end')
+      .attr('dominant-baseline', narrow ? 'auto' : 'middle')
+      .attr('fill', 'var(--color-fg)').attr('font-size', 12)
+      .text((d) => d.short);
+
+    groups.append('rect')
+      .attr('x', left).attr('y', (d) => y(d.id))
+      .attr('width', Math.max(1, width - right - left)).attr('height', y.bandwidth() + (narrow ? 9 : 0))
+      .attr('fill', 'transparent')
+      .on('pointerenter pointermove', (event, d) => {
+        const row = byId.get(d.id);
+        const head = document.createElement('div');
+        head.className = 'cmh-tip-head';
+        head.textContent = row.short;
+        const line = (label, value) => {
+          const r = document.createElement('div');
+          r.className = 'cmh-tip-row';
+          const a = document.createElement('span');
+          a.textContent = label;
+          const b = document.createElement('span');
+          b.textContent = value;
+          r.append(a, b);
+          return r;
+        };
+        const parts = [head, line(row.year, showValue(row.value, row.unit))];
+        if (row.canada !== '') parts.push(line('Canada', showValue(row.canada, row.unit)));
+        if (row.ontario !== '') parts.push(line('Ontario', showValue(row.ontario, row.unit)));
+        parts.push(line('Gap', (d.gap_canada_pct > 0 ? '+' : '') + fmt1(d.gap_canada_pct) + '%'));
+        parts.push(line('CIHI', row.cihi_comparison || '—'));
+        tip.replaceChildren(...parts);
+        tip.dataset.shown = '1';
+        const box = el.getBoundingClientRect();
+        const tw = tip.offsetWidth || 170;
+        tip.style.left = Math.max(0, Math.min(event.clientX - box.left + 12, box.width - tw - 2)) + 'px';
+        tip.style.top = Math.max(0, event.clientY - box.top - 8) + 'px';
+      })
+      .on('pointerleave', () => { tip.dataset.shown = '0'; });
+
+    el.replaceChildren(svg.node(), tip);
+    el.style.minHeight = height + 'px';
+  });
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+# The dashboard is a prebuilt static page: scripts/build_site.py generates site/index.html
+# from dashboard/index.html and data/*.csv, and the result is committed. Netlify only has
+# to serve it, so there is no build command.
+[build]
+  publish = "site"

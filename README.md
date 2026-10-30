@@ -53,35 +53,53 @@ in the page (`isShown`), so any of them is a one-line restore.
 ## Layout
 
 ```
-dashboard/index.html              the dashboard page
+dashboard/index.html              the artifact source page
+site/index.html                   generated standalone build (this is what gets deployed)
 data/indicators.csv               latest published result per indicator (25 rows)
 data/trend.csv                    every published year per indicator (197 rows)
 data/targets.csv                  the six QIP 2026/27 commitments
 data/source/cihi-cmh-rows.csv     CIHI's raw rows for this hospital
 data/source/cihi-benchmark-rows.csv  Canada and Ontario rows for the same indicators
 data/source/indicator-meta.csv    HSP framework dimension and interpretation per indicator
+scripts/build_site.py             builds site/index.html from the artifact page
 scripts/build_cihi.py             builds indicators.csv and trend.csv
 scripts/build_targets.py          builds targets.csv
 scripts/pdftxt.py                 extracts text from the QIP PDFs
 scripts/parse_qip.py              splits that text into indicator blocks
 ```
 
-## The page does not run standalone
+## Two copies of the page
 
-`dashboard/index.html` is the source of a Claude Dashboard artifact, not a self-contained
-web page. It expects the host runtime to provide:
+`dashboard/index.html` is the source of a Claude Dashboard artifact. It is not
+self-contained: it expects the host runtime to supply `dash.data` / `dash.draw` /
+`dash.calc`, a `d3` global, and the ~26 design tokens it styles against. Opened directly
+it renders unstyled text with no data, which is why it cannot simply be dropped on a
+static host.
 
-- `dash.data(id)`, `dash.draw(name, fn)` and `dash.calc(id, {...})`
-- `d3` as a global (v7)
-- the design tokens it styles against (`--color-fg`, `--color-panel`, `--cds-pad-*`, and
-  the rest)
+`site/index.html` is a generated standalone build that runs anywhere. It copies the
+artifact page verbatim and adds what the host was providing:
 
-Opening it directly in a browser will render the fixed text and nothing else. The three
-datasets live in the artifact's own store, pointing at uploaded copies of the CSVs in
-`data/`.
+- a document skeleton, and the design tokens in light and dark
+- d3 v7 from a CDN
+- the three datasets, inlined from `data/*.csv`
+- a small `dash` shim (lazy, memoised calcs; draws flushed on `DOMContentLoaded`)
 
-It also follows the artifact type's one-writer rule: every piece of fixed text lives in
-the HTML, and scripts only fill elements marked `data-draw="name"`.
+Rebuild it after any change to the artifact page or the data:
+
+```bash
+python3 scripts/build_site.py
+```
+
+The artifact page stays the single source of truth — the build script never edits it.
+
+Both follow the artifact type's one-writer rule: every piece of fixed text lives in the
+HTML, and scripts only fill elements marked `data-draw="name"`.
+
+## Deploying
+
+`netlify.toml` sets `publish = "site"` and no build command, because `site/index.html` is
+committed. Point Netlify (or any static host) at the repository and it serves that file.
+Deploying `dashboard/` instead is the one thing that will not work.
 
 ## Rebuilding the data
 
