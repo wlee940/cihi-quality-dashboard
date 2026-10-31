@@ -95,6 +95,17 @@ The artifact page stays the single source of truth — the build script never ed
 Both follow the artifact type's one-writer rule: every piece of fixed text lives in the
 HTML, and scripts only fill elements marked `data-draw="name"`.
 
+## Saving a PDF
+
+The header carries a **Save as PDF** button, which opens the browser's own print dialog.
+That keeps the text selectable and the charts vector, which rasterising the page to an
+image would not. A `@media print` block in the page handles the rest: the button and
+tooltips are hidden, the palette is forced to its light values and marked
+`print-color-adjust: exact` so the status colours survive, small cards are kept whole
+across page breaks, the card grid drops to two columns, and the indicator table is
+released from its scrolling box and shrunk to fit the paper width. It comes out at about
+ten pages.
+
 ## Deploying
 
 `netlify.toml` sets `publish = "site"` and no build command, because `site/index.html` is

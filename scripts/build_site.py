@@ -178,7 +178,14 @@ window.dash = (() => {
       try { fn(el); } catch (err) { console.error('draw failed:', name, err); }
     });
   });
-  document.addEventListener('DOMContentLoaded', flush);
+  // Draws size their charts from el.clientWidth, so they must run after the first
+  // layout, not merely after parsing: on DOMContentLoaded the width still reads 0 and
+  // the charts fall back to a guessed width.
+  // 'load' fires after the first layout, so widths are real by then. It is used in
+  // preference to requestAnimationFrame, which never fires in a background tab and
+  // would leave the page blank until it was looked at.
+  if (document.readyState === 'complete') flush();
+  else window.addEventListener('load', flush);
 
   return {
     data: data,

@@ -138,11 +138,80 @@
   .cmh-fail { display: flex; align-items: center; justify-content: center; gap: var(--cds-gap-xs); min-height: 8rem; }
   .cmh-fail-dot { width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); flex: none; }
   .cmh-fail-text { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+  .cmh-head-row { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--cds-gap-md); }
+  .cmh-print {
+    flex: none;
+    font-family: inherit;
+    font-size: var(--cds-font-size-caption);
+    font-weight: var(--cds-font-weight-medium);
+    color: var(--color-fg);
+    background: var(--color-panel);
+    border: 1px solid var(--color-border-line);
+    border-radius: var(--cds-radius);
+    padding: var(--cds-pad-xs) var(--cds-pad-sm);
+    cursor: pointer;
+  }
+  .cmh-print:hover { background: color-mix(in srgb, var(--color-fg) 6%, var(--color-panel)); }
+  .cmh-print:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+
+  /* Saving as PDF goes through the browser's print pipeline, so the output keeps live
+     text and vector charts. These rules give it a page that the dark scheme, the screen
+     column count and the on-screen chrome would otherwise spoil. The status colours are
+     forced to their light values and marked exact, because a printer drops backgrounds
+     by default and the colours carry the meaning here. */
+  @media print {
+    :root {
+      --cmh-ok: #1C7A58;
+      --cmh-mid: #5F7183;
+      --cmh-bad: #C62828;
+      --cmh-none: #8A8A8A;
+      --color-fg: #1f1e1c;
+      --color-fg-muted: #55534e;
+      --color-panel: #ffffff;
+      --color-border-line: #c9c6bf;
+      --cds-border: #c9c6bf;
+      --cds-text-secondary: #55534e;
+      --cds-chart-axis: #55534e;
+      --cds-chart-grid: #dcd9d2;
+      --cds-chart-muted: #9a968e;
+      --cds-chart-reference: #55534e;
+      --cds-shadow-popover: none;
+    }
+    @page { margin: 14mm; }
+    html, body { background: #fff; }
+    .cmh {
+      gap: var(--cds-gap-md);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .cmh-print, .cmh-tip { display: none !important; }
+    .cmh-card { box-shadow: none; }
+    /* Only the small cards are held together. Keeping the tall narrative and chart
+       cards unbreakable pushes each one whole onto the next page and leaves most of
+       the preceding page blank. */
+    .cmh-grid > .cmh-card, .cmh-tiles { break-inside: avoid; }
+    .cmh h1, .cmh-card-title, .cmh-section-head { break-after: avoid; }
+    .cmh-grid { grid-template-columns: repeat(2, 1fr); }
+    thead { display: table-header-group; }
+    tr { break-inside: avoid; }
+    /* On screen the table scrolls inside a capped box. Paper has neither scrollbar nor
+       sticky header, so the box is released and the table made to fit the page instead:
+       smaller type, tighter cells, a narrower name column and wrapping at spaces. Cells
+       are not broken mid-word, which turns "Weakening" into "Weake ning". */
+    .cmh-table-box { overflow: visible; max-height: none; }
+    .cmh table.cmh-table { font-size: 10px; }
+    .cmh-table th { position: static; }
+    .cmh-table td.cmh-wrap { min-width: 9rem; }
+    .cmh-table th, .cmh-table td { padding-right: 4px; white-space: normal; }
+  }
 </style>
 
 <div class="cmh">
   <header>
-    <h1>CIHI quality indicators, Cambridge Memorial Hospital</h1>
+    <div class="cmh-head-row">
+      <h1>CIHI quality indicators, Cambridge Memorial Hospital</h1>
+      <button type="button" class="cmh-print" data-print>Save as PDF</button>
+    </div>
     <p class="cmh-sub">Every quality indicator CIHI grades for this hospital, in CIHI's own performance categories. Status is CIHI's own comparison against the Canadian average: green is above average, slate grey is no different from average, red is below average. The hospital's own quality improvement plan targets are kept separate, further down, because target attainment is a different question from peer comparison. Peer group <b data-draw="peer" data-source="indicators" data-field="peer_group" data-where="id=hospital_deaths_hsmr">—</b>.</p>
   </header>
 
@@ -790,6 +859,11 @@
     const bottom = 34;
 
     const svg = d3.create('svg').attr('width', '100%');
+    // getComputedTextLength() returns 0 on a node that is not in the document, so the
+    // chart is attached before the labels are measured. Without this the gutter
+    // reserved for them collapses to a few pixels and every label is drawn outside the
+    // chart box, where it is clipped by the card edge.
+    el.replaceChildren(svg.node());
     let labelW = 0;
     if (!narrow) {
       const measure = svg.append('g').attr('opacity', 0);
@@ -804,7 +878,10 @@
     const height = top + rows.length * rowH + bottom;
     svg.attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'img');
 
-    const reach = Math.max(10, d3.max(rows, (d) => Math.abs(d.gap_canada_pct)) * 1.12);
+    // The domain is padded well past the longest bar so that its value label, which
+    // sits just outside the bar end, still clears the category labels in the gutter.
+    // At 1.12 the longest bar ran into them on a narrower page, such as when printing.
+    const reach = Math.max(10, d3.max(rows, (d) => Math.abs(d.gap_canada_pct)) * 1.35);
     const x = d3.scaleLinear([-reach, reach], [left, width - right]);
     const y = d3.scaleBand(rows.map((d) => d.id), [top, top + rows.length * rowH]).paddingInner(narrow ? 0.55 : 0.3);
 
@@ -894,5 +971,11 @@
     el.replaceChildren(svg.node(), tip);
     el.style.minHeight = height + 'px';
   });
+
+  // The browser's own print pipeline keeps the text selectable and the charts vector,
+  // which rasterising the page to an image would not. The @media print rules above do
+  // the page setup; this only opens the dialog.
+  const saveButton = document.querySelector('[data-print]');
+  if (saveButton) saveButton.addEventListener('click', () => window.print());
 })();
 </script>
